@@ -4,7 +4,6 @@ const webpack = require('webpack')
 const config = require('../config')
 const merge = require('webpack-merge')
 const path = require('path')
-const express = require('express');
 const baseWebpackConfig = require('./webpack.base.conf')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
@@ -14,12 +13,15 @@ const portfinder = require('portfinder')
 const HOST = process.env.HOST
 const PORT = process.env.PORT && Number(process.env.PORT)
 
+
+// mock-up 数据 - START
+const express = require('express');
 const app = express();
+
 var appData = require('../src/common/data.json'); // mock-up 数据文件
 var seller = appData.seller;
 var goods = appData.goods;
 var ratings = appData.ratings;
-
 var apiRouter = express.Router(); // 是服务器端的 router，vue-router 是前端的
 
 apiRouter.get('/seller', function (req, res) {
@@ -45,6 +47,7 @@ apiRouter.get('/ratings', function (req, res) {
 
 app.use('/api', apiRouter);
 app.listen(3000); // express 监听在 3000 端口，如果配成 8080，则 vue 页面会自动使用 8081 端口。。。
+// mock-up 数据 - END
 
 const devWebpackConfig = merge(baseWebpackConfig, {
   module: {
