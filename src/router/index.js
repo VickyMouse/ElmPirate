@@ -4,7 +4,9 @@ import Goods from 'components/goods/Goods';
 import Seller from 'components/seller/Seller';
 import Ratings from 'components/ratings/Ratings';
 
-Vue.use(Router);
+import 'common/stylus/index.styl';
+
+Vue.use(Router); // 引入 vue-router
 
 export default new Router({
   linkActiveClass: 'active', // 原来点击 a 标签自动加上的 class 太长啦，缩短一下
