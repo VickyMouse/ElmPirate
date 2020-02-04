@@ -65,7 +65,7 @@
   </div>
 </template>
 
-<script>
+<script scoped>
 import Star from 'components/star/Star';
 
 export default {
