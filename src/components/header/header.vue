@@ -15,18 +15,30 @@
           <span class="text">{{seller.supports[0].description}}</span>
         </div>
       </div>
-      <div v-if="seller.supports" class="supports-count">
+      <div v-if="seller.supports" class="supports-count" @click="showDetail">
         <span class="count">{{seller.supports.length}}个</span>
         <span class="ic-keyboard_arrow_right" />
       </div>
     </div>
-    <div class="bulletin-wrapper">
+    <div class="bulletin-wrapper" @click="showDetail">
       <span class="bulletin-title" />
       <span class="bulletin-text">{{seller.bulletin}}</span>
       <span class="ic-keyboard_arrow_right" />
     </div>
     <div class="bg-blur">
       <img :src="seller.avatar" width="100%" height="100%" />
+    </div>
+    <div v-show="detailShow" class="detail">
+      <div class="detail-wrapper clearfix">
+        <div class="detail-content">
+          <p>{{seller.bulletin}}</p>
+          <p>{{seller.bulletin}}</p>
+          <p>{{seller.bulletin}}</p>
+        </div>
+      </div>
+      <div class="detail-close">
+        <div class="ic-close" />
+      </div>
     </div>
   </div>
 </template>
@@ -35,6 +47,16 @@
 export default {
   props: {
     seller: {}
+  },
+  data() {
+    return {
+      detailShow: false
+    };
+  },
+  methods: {
+    showDetail() {
+      this.detailShow = true;
+    }
   },
   created() {
     this.classMap = ["decrease", "discount", "special", "invoice", "guarantee"];
@@ -202,6 +224,35 @@ export default {
     height: 100%;
     z-index: -1;
     filter: blur(10px); // 模糊效果
+  }
+
+  .detail {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100; // 浮层
+    width: 100%; // 全屏，宽高和屏幕一致
+    height: 100%;
+    overflow: auto; // 不能用 hidden，hidden 的话，内容超出屏幕就不能滚动了
+    background: rgba(7, 17, 27, 0.8);
+
+    .detail-wrapper {
+      min-height: 100%; // wrapper 撑满屏幕，即使内容很少
+
+      .detail-content {
+        margin-top: 64px;
+        padding-bottom: 64px;
+      }
+    }
+
+    .detail-close {
+      position: relative; // 相对于（全屏的） wrapper
+      width: 32px;
+      height: 32px;
+      margin: -64px auto 0 auto; // top 往上提，进入屏幕区域
+      clear: both; // 清除左右两边浮动
+      font-size: 32px;
+    }
   }
 }
 </style>
