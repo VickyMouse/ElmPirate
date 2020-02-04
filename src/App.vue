@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <Header/>
+    <Header :seller="seller" />
     <div class="tab border-1px">
       <div class="tab-item">
         <router-link class="tab-link" to="/goods">商品</router-link>
@@ -17,12 +17,33 @@
 </template>
 
 <script>
+import axios from 'axios';
 import Header from 'components/header/Header';
+
+const ERR_OK = 0;
 
 export default {
   name: 'App',
+  data() {
+    return {
+      seller: {}
+    };
+  },
   components: {
     Header
+  },
+  created() {
+    axios.get('/api/seller').then((res) => {
+      if (res.status === 200) {
+        console.log('/api/seller: ' + res.data.errno);
+        if (res.data.errno === ERR_OK) {
+          this.seller = res.data.data;
+          console.log(this.seller);
+        }
+      }
+    }).catch((error) => {
+      console.log(error);
+    });
   }
 };
 </script>

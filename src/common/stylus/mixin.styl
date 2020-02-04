@@ -19,7 +19,7 @@ border-1px-top($color)
     width: 100%
     border-top: 1px solid $color
     content: ' '
-    
+
 border-1px-left($color)
   position: relative
   &:before
@@ -41,3 +41,8 @@ border-1px-right($color)
     height: 100%
     border-right: 1px solid $color
     content: ' '
+
+bg-image($url)
+  background-image: url($url + "@2x.png")
+  @media (-webkit-min-device-pixel-ratio: 3), (min-device-pixel-ratio: 3)
+    background-image: url($url + "@3x.png")
