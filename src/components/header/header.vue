@@ -28,23 +28,50 @@
     <div class="bg-blur">
       <img :src="seller.avatar" width="100%" height="100%" />
     </div>
-    <div v-show="detailShow" class="detail">
-      <div class="detail-wrapper clearfix">
-        <div class="detail-content">
-          <p>{{seller.bulletin}}</p>
-          <p>{{seller.bulletin}}</p>
-          <p>{{seller.bulletin}}</p>
+    <transition name="fade">
+      <div v-show="detailShow" class="detail">
+        <div class="detail-wrapper clearfix">
+          <div class="detail-content">
+            <h1 class="name">{{seller.name}}</h1>
+            <div class="star-wrapper">
+              <star :size="48" :score="seller.score" />
+            </div>
+            <div class="title">
+              <div class="line" />
+              <div class="text">优惠信息</div>
+              <div class="line" />
+            </div>
+            <ul v-if="seller.supports" class="supports">
+              <li class="support-item" :key="index" v-for="(item, index) in seller.supports">
+                <span class="icon" :class="classMap[seller.supports[index].type]" />
+                <span class="text">{{seller.supports[index].description}}</span>
+              </li>
+            </ul>
+            <div class="title">
+              <div class="line" />
+              <div class="text">商家公告</div>
+              <div class="line" />
+            </div>
+            <div class="bulletin">
+              <p class="content">{{seller.bulletin}}</p>
+            </div>
+          </div>
+        </div>
+        <div class="detail-close" @click="hideDetail">
+          <div class="ic-close" />
         </div>
       </div>
-      <div class="detail-close">
-        <div class="ic-close" />
-      </div>
-    </div>
+    </transition>
   </div>
 </template>
 
 <script>
+import Star from 'components/star/Star';
+
 export default {
+  components: {
+    Star
+  },
   props: {
     seller: {}
   },
@@ -56,10 +83,13 @@ export default {
   methods: {
     showDetail() {
       this.detailShow = true;
+    },
+    hideDetail() {
+      this.detailShow = false;
     }
   },
   created() {
-    this.classMap = ["decrease", "discount", "special", "invoice", "guarantee"];
+    this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
   }
 };
 </script>
@@ -235,13 +265,119 @@ export default {
     height: 100%;
     overflow: auto; // 不能用 hidden，hidden 的话，内容超出屏幕就不能滚动了
     background: rgba(7, 17, 27, 0.8);
+    transition: all 0.5s;
+    backdrop-filter: blur(10px); // 模糊透出来的下方页面：只有在 iOS 上才起效！！
+
+    &.fade-enter-active, &.fade-leave-active {
+      opacity: 0;
+      background: rgba(7, 17, 27, 0);
+    }
+
+    &.fade-enter, &.fade-leave-to { /* .fade-leave-active, 2.1.8 版本以下 */
+      opacity: 0;
+      background: rgba(7, 17, 27, 0);
+    }
 
     .detail-wrapper {
       min-height: 100%; // wrapper 撑满屏幕，即使内容很少
+      width: 100%;
 
       .detail-content {
         margin-top: 64px;
         padding-bottom: 64px;
+
+        .name {
+          line-height: 16px;
+          text-align: center;
+          font-size: 16px;
+          font-weight: 700;
+        }
+
+        .star-wrapper {
+          margin-top: 18px;
+          padding: 2px 0;
+          text-align: center;
+        }
+
+        .title {
+          display: flex;
+          width: 80%;
+          margin: 28px auto 24px auto;
+
+          .line {
+            flex: 1;
+            position: relative;
+            top: -6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+          }
+
+          .text {
+            padding: 0 12px;
+            font-size: 14px;
+            font-weight: 700;
+          }
+        }
+
+        .supports {
+          width: 80%;
+          margin: 0 auto;
+
+          .support-item {
+            padding: 0 12px;
+            margin-bottom: 12px;
+            font-size: 0;
+          }
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+
+          .icon {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            vertical-align: top;
+            margin-right: 16px;
+            background-size: 16px 16px;
+            background-repeat: no-repeat;
+
+            &.decrease {
+              bg-image('decrease_2');
+            }
+
+            &.discount {
+              bg-image('discount_2');
+            }
+
+            &.guarantee {
+              bg-image('guarantee_2');
+            }
+
+            &.invoice {
+              bg-image('invoice_2');
+            }
+
+            &.special {
+              bg-image('special_2');
+            }
+          }
+
+          .text {
+            line-height: 16px;
+            font-size: 12px;
+          }
+        }
+
+        .bulletin {
+          width: 80%;
+          margin: 0 auto;
+
+          .content {
+            padding: 0 12px;
+            line-height: 24px;
+            font-size: 12px;
+          }
+        }
       }
     }
 
