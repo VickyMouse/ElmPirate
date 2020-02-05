@@ -2,7 +2,13 @@
   <div class="goods">
     <div class="menu-wrapper">
       <ul>
-        <li v-for="(item, index) in goods" :key="index" class="menu-item">
+        <li
+          v-for="(item, index) in goods"
+          :key="index"
+          class="menu-item"
+          :class="{'current' : currentIndex === index}"
+          @click="selectMenu(index)"
+        >
           <span class="text border-1px">
             <SupportsIcon class="icon" :type="item.type" :size="3" />
             {{item.name}}
@@ -12,7 +18,7 @@
     </div>
     <div class="foods-wrapper">
       <ul>
-        <li v-for="(cate, index) in goods" :key="index" class="food-list">
+        <li v-for="(cate, index) in goods" :key="index" class="food-list food-list-hook">
           <h1 class="title">{{cate.name}}</h1>
           <ul>
             <li v-for="(food, i) in cate.foods" :key="i" class="food-item border-1px">
@@ -23,10 +29,12 @@
                 <h2 class="name">{{food.name}}</h2>
                 <p class="desc" v-show="food.description">{{food.description}}</p>
                 <div class="extra">
-                  <span class="count">月售 {{food.sellCount}} 份</span><span>好评率 {{food.rating}}%</span>
+                  <span class="count">月售 {{food.sellCount}} 份</span>
+                  <span>好评率 {{food.rating}}%</span>
                 </div>
                 <div class="price">
-                  <span class="now">￥{{food.price}}</span><span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
+                  <span class="now">￥{{food.price}}</span>
+                  <span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
                 </div>
               </div>
             </li>
@@ -38,9 +46,9 @@
 </template>
 
 <script scoped>
-import axios from "axios";
-import SupportsIcon from "components/supportsIcon/SupportsIcon";
-import BScroll from "better-scroll";
+import axios from 'axios';
+import SupportsIcon from 'components/supportsIcon/SupportsIcon';
+import BScroll from 'better-scroll';
 
 const ERR_OK = 0;
 
@@ -53,15 +61,31 @@ export default {
   },
   data() {
     return {
-      goods: []
+      goods: [],
+      heightList: [],
+      scrollY: 0
     };
+  },
+  computed: {
+    currentIndex() {
+      for (let i = 0; i < this.heightList.length - 1; i++) {
+        let heightStart = this.heightList[i];
+        let heightEnd = this.heightList[i + 1];
+        if (this.scrollY >= heightStart && this.scrollY < heightEnd) {
+          // console.log('currentIndex: ' + i);
+          return i;
+        }
+      }
+      // console.log('currentIndex: ' + 0);
+      return 0;
+    }
   },
   created() {
     axios
-      .get("/api/goods")
+      .get('/api/goods')
       .then(res => {
         if (res.status === 200) {
-          console.log("/api/goods: " + res.data.errno);
+          console.log('/api/goods: ' + res.data.errno);
           if (res.data.errno === ERR_OK) {
             this.goods = res.data.data;
             console.log(this.goods);
@@ -69,7 +93,8 @@ export default {
              * 此时初始化 better-scroll 的话，计算出来的高度是有问题的，
              * 要等 DOM 更新完毕，再初始化 better-scroll！
              */
-            this.$nextTick(() => { // 此时才能拿到正确的高度
+            this.$nextTick(() => {
+              // 此时才能拿到正确的高度
               this._initBScroll();
               this._calculateHeight();
             });
@@ -81,11 +106,36 @@ export default {
       });
   },
   methods: {
+    selectMenu(index) {
+      // console.log('Menu selected: ' + index);
+      let foodList = this.foodsWrapper.querySelectorAll('.food-list-hook');
+      let el = foodList[index];
+      this.foodsScroll.scrollToElement(el, 300);
+    },
     _initBScroll() {
-      let menuWrapper = document.querySelector(".menu-wrapper");
-      this.menuScroll = new BScroll(menuWrapper, {});
-      let foodWrapper = document.querySelector(".foods-wrapper");
-      this.foodScroll = new BScroll(foodWrapper, {});
+      this.menuWrapper = document.querySelector('.menu-wrapper');
+      this.menuScroll = new BScroll(this.menuWrapper, {
+        click: true // 禁掉默认的点击事件
+      });
+      this.foodsWrapper = document.querySelector('.foods-wrapper');
+      this.foodsScroll = new BScroll(this.foodsWrapper, {
+        probeType: 3 // 表示滚动的时候，实时监听滚动的位置
+      });
+
+      this.foodsScroll.on('scroll', pos => {
+        this.scrollY = Math.abs(Math.round(pos.y));
+      });
+    },
+    _calculateHeight() {
+      // 使用原生 DOM 的一些方法获取高度
+      let foodList = this.foodsWrapper.querySelectorAll('.food-list-hook');
+      let height = 0;
+      this.heightList.push(height);
+      for (let i = 0; i < foodList.length; i++) {
+        let item = foodList[i];
+        height += item.clientHeight;
+        this.heightList.push(height);
+      }
     }
   }
 };
@@ -116,6 +166,18 @@ export default {
       line-height: 14px;
       font-size: 0;
       border-1px-bottom(rgba(7, 17, 27, 0.1));
+
+      &.current {
+        position: relative;
+        margin-top: -1px;
+        z-index: 10;
+        background: #fff;
+        border-none();
+
+        .text {
+          font-weight: 700;
+        }
+      }
 
       .text {
         display: table-cell;
@@ -198,6 +260,7 @@ export default {
             margin-right: 8px;
             font-size: 14px;
             color: rgb(240, 20, 20);
+            font-weight: 700;
           }
 
           .old {
