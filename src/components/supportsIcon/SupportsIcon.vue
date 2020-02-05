@@ -1,5 +1,5 @@
 <template>
-  <span class="icon" :class="[classMap[type], iconSizeClass]"></span>
+  <span class="icon" :class="[classMap[type], iconSizeClass]" v-show="type >= 0" ></span>
 </template>
 
 <script scoped>
