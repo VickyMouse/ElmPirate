@@ -37,12 +37,15 @@
                   <span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
                 </div>
               </div>
+              <div class="control-wrapper">
+                <CartControl :food="food" />
+              </div>
             </li>
           </ul>
         </li>
       </ul>
     </div>
-    <Shopcart :deliveryPrice="seller.deliveryPrice" :minPrice="seller.minPrice"/>
+    <Shopcart :deliveryPrice="seller.deliveryPrice" :minPrice="seller.minPrice" />
   </div>
 </template>
 
@@ -50,6 +53,7 @@
 import axios from 'axios';
 import SupportsIcon from 'components/supportsIcon/SupportsIcon';
 import Shopcart from 'components/shopcart/Shopcart';
+import CartControl from 'components/cartControl/CartControl';
 import BScroll from 'better-scroll';
 
 const ERR_OK = 0;
@@ -60,7 +64,8 @@ export default {
   },
   components: {
     SupportsIcon,
-    Shopcart
+    Shopcart,
+    CartControl
   },
   data() {
     return {
@@ -122,7 +127,8 @@ export default {
       });
       this.foodsWrapper = document.querySelector('.foods-wrapper');
       this.foodsScroll = new BScroll(this.foodsWrapper, {
-        probeType: 3 // 表示滚动的时候，实时监听滚动的位置
+        probeType: 3, // 表示滚动的时候，实时监听滚动的位置
+        click: true // 禁掉默认的点击事件
       });
 
       this.foodsScroll.on('scroll', pos => {
@@ -272,6 +278,12 @@ export default {
             color: rgb(147, 153, 159);
           }
         }
+      }
+
+      .control-wrapper {
+        position: absolute;
+        right: 0;
+        bottom: 12px;
       }
     }
   }
