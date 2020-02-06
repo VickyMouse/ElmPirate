@@ -42,12 +42,14 @@
         </li>
       </ul>
     </div>
+    <Shopcart :deliveryPrice="seller.deliveryPrice" :minPrice="seller.minPrice"/>
   </div>
 </template>
 
 <script scoped>
 import axios from 'axios';
 import SupportsIcon from 'components/supportsIcon/SupportsIcon';
+import Shopcart from 'components/shopcart/Shopcart';
 import BScroll from 'better-scroll';
 
 const ERR_OK = 0;
@@ -57,7 +59,8 @@ export default {
     seller: {}
   },
   components: {
-    SupportsIcon
+    SupportsIcon,
+    Shopcart
   },
   data() {
     return {
